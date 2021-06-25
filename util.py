@@ -1,0 +1,47 @@
+def get_argparser():
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--n-latents', type=int, default=64,
+                        help='size of the latent embedding [default: 64]')
+    parser.add_argument('--batch-size', type=int, default=100, metavar='N',
+                        help='input batch size for training [default: 100]')
+    parser.add_argument('--epochs', type=int, default=500, metavar='N',
+                        help='number of epochs to train [default: 500]')
+    parser.add_argument('--annealing-epochs', type=int, default=200, metavar='N',
+                        help='number of epochs to anneal KL for [default: 200]')
+    parser.add_argument('--lr', type=float, default=1e-3, metavar='LR',
+                        help='learning rate [default: 1e-3]')
+    parser.add_argument('--log-interval', type=int, default=10, metavar='N',
+                        help='how many batches to wait before logging training status [default: 10]')
+    parser.add_argument('--lambda-image', type=float, default=1.,
+                        help='multipler for image reconstruction [default: 1]')
+    parser.add_argument('--lambda-text', type=float, default=10.,
+                        help='multipler for text reconstruction [default: 10]')
+    parser.add_argument('--cuda', action='store_true', default=False,
+                        help='enables CUDA training [default: False]')
+    return parser
+
+
+def get_executionName():
+    from time import localtime, strftime
+    st=strftime("%d %b %Y %H:%M:%S", localtime())
+    return st
+
+
+def saveargs(id,args):
+    st=id+"\n"
+    for key in vars(args):
+        st+=key+" : "+str(args.__dict__.get(key))+"\n"
+    text_file = open("./"+id+"/params.txt", "wt")
+    n = text_file.write(st)
+    text_file.close()
+
+def logEpoch(id,st):
+    import os
+    if not os.path.exists("./"+id+"/log_epochs.txt"):
+        mode="w"
+    else:
+        mode = "a"
+    text_file = open("./"+id+"/log_epochs.txt", mode)
+    text_file.write(st+"\n")
+    text_file.close()
