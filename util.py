@@ -1,3 +1,6 @@
+import datetime
+import timeit
+
 def get_argparser():
     import argparse
     parser = argparse.ArgumentParser()
@@ -45,3 +48,24 @@ def logEpoch(id,st):
     text_file = open("./"+id+"/log_epochs.txt", mode)
     text_file.write(st+"\n")
     text_file.close()
+
+def append_to_params_log(id,st):
+    text_file = open("./"+id+"/params.txt", "a")
+    n = text_file.write(st)
+    text_file.close()
+
+
+
+
+
+class Timer:
+
+    def __init__(self, round_ndigits: int = 0):
+        self._round_ndigits = round_ndigits
+        self._start_time = timeit.default_timer()
+
+    def __call__(self) -> float:
+        return timeit.default_timer() - self._start_time
+
+    def __str__(self) -> str:
+        return str(datetime.timedelta(seconds=round(self(), self._round_ndigits)))

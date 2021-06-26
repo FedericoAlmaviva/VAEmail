@@ -15,7 +15,7 @@ from torchvision import transforms
 from torchvision.datasets import MNIST
 import util
 import myModel
-
+import time
 def save_checkpoint(state, is_best, folder='./', filename='checkpoint.pth.tar'):
     if not os.path.isdir(folder):
         os.mkdir(folder)
@@ -155,6 +155,7 @@ if __name__ == "__main__":
         train_loss_meter = AverageMeter()
 
         # NOTE: is_paired is 1 if the example is paired
+        epch_time = time.time()
         for batch_idx, (image, text) in enumerate(train_loader):
             if epoch < args.annealing_epochs:
                 # compute the KL annealing factor for the current mini-batch in the current epoch
@@ -201,7 +202,7 @@ if __name__ == "__main__":
                 print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}\tAnnealing-Factor: {:.3f}'.format(
                     epoch, batch_idx * len(image), len(train_loader.dataset),
                            100. * batch_idx / len(train_loader), train_loss_meter.avg, annealing_factor))
-        st='====> Epoch: {}\tLoss: {:.4f}\tAnnealing-Factor: {:.3f}'.format(epoch, train_loss_meter.avg,annealing_factor)
+        st='====> Epoch: {}\tLoss: {:.4f}\tAnnealing-Factor: {:.3f}\tTime: {:.2f}s'.format(epoch, train_loss_meter.avg,annealing_factor,time.time()-epch_time)
         print(st)
         util.logEpoch(execution_id,st)
 
@@ -234,6 +235,7 @@ if __name__ == "__main__":
 
 
     best_loss = sys.maxunicode
+    general_timer = util.Timer()
     for epoch in range(1, args.epochs + 1):
         train(epoch)
         test_loss = test(epoch)
@@ -246,3 +248,4 @@ if __name__ == "__main__":
             'n_latents': args.n_latents,
             'optimizer': optimizer.state_dict(),
         }, is_best, folder='./trained_models')
+    util.append_to_params_log(execution_id,"Training time: "+str(general_timer))
