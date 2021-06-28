@@ -55,6 +55,25 @@ def append_to_params_log(id,st):
     text_file.close()
 
 
+def logNetStruct(id, model):
+    st="model structure (vars dump):\n"
+    for key in vars(model):
+        st += key + " : " + str(model.__dict__.get(key)) + "\n"
+    text_file = open("./" + id + "/structure.txt", "wt")
+    n = text_file.write(st)
+    text_file.close()
+
+def logCode(id, model):
+    import inspect
+    st=""
+    for elem in model._modules.values():
+        st+=type(elem).__name__+"\n"
+        tmp = inspect.getsource(getattr(elem,"forward"))
+        st+=tmp.replace("\n","\n    ")
+        st+="\r\n"
+    text_file = open("./" + id + "/forwards code dump.txt", "wt")
+    n = text_file.write(st)
+    text_file.close()
 
 
 

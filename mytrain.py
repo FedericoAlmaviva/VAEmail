@@ -147,6 +147,8 @@ if __name__ == "__main__":
 
     model = myModel.MVAE(args.n_latents)
     optimizer = optim.Adam(model.parameters(), lr=args.lr)
+    util.logNetStruct(execution_id,model)
+    util.logCode(execution_id,model)
     if(args.cuda):
         model.cuda()
 

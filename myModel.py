@@ -56,26 +56,32 @@ class ImageEncoder(nn.Module):
         super(ImageEncoder, self).__init__()
         self.n_latents=n_latents
         self.enc1 = nn.Linear(in_features=784, out_features=512) # 28*28=784
-        self.enc2 = nn.Linear(in_features=512,out_features=n_latents*2)
+        self.enc2 = nn.Linear(512,512)
+        self.enc3 = nn.Linear(512, 512)
+        self.enc41 = nn.Linear(512, n_latents)
+        self.enc42 = nn.Linear(512, n_latents)
         self.swish = Swish()
 
 
     def forward(self,x):
-        x = F.relu(self.enc1(x.view(-1, 784)))
-        x= self.swish(x)
-        x = self.enc2(x).view(-1,2,self.n_latents)
-        return x[:,0,:],x[:,1,:]
+        x= self.swish(F.relu(self.enc1(x.view(-1, 784))))
+        x=self.swish(self.enc2(x))
+        x = self.swish(self.enc3(x))
+        return self.enc41(x),self.enc42(x)
 
 class ImageDecoder(nn.Module):
     def __init__(self,n_latents):
         super(ImageDecoder, self).__init__()
         self.n_latents=n_latents
         self.dec1 = nn.Linear(in_features=n_latents, out_features=512)
-        self.dec2 = nn.Linear(in_features=512, out_features=784)
+        self.dec2 = nn.Linear(512,512)
+        self.dec3 = nn.Linear(in_features=512, out_features=784)
+        self.swish=Swish()
 
     def forward(self,z):
-        ret = F.relu(self.dec1(z))
-        return  torch.sigmoid(self.dec2(ret))
+        ret = self.swish(F.relu(self.dec1(z)))
+        ret = self.swish(self.dec2(ret))
+        return (self.dec3(ret))
 
 class TextEncoder(nn.Module):
     """Parametrizes q(z|y).
