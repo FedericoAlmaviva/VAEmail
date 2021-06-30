@@ -92,14 +92,14 @@ class TextEncoder(nn.Module):
     def __init__(self, n_latents):
         super(TextEncoder, self).__init__()
         self.fc1   = nn.Embedding(10, 512)
-        self.fc2   = nn.Linear(512, 512)
+        #self.fc2   = nn.Linear(512, 512)
         self.fc31  = nn.Linear(512, n_latents)
         self.fc32  = nn.Linear(512, n_latents)
         self.swish = Swish()
 
     def forward(self, x):
         h = self.swish(self.fc1(x))
-        h = self.swish(self.fc2(h))
+        #h = self.swish(self.fc2(h))
         return self.fc31(h), self.fc32(h)
 
 
@@ -112,14 +112,14 @@ class TextDecoder(nn.Module):
     def __init__(self, n_latents):
         super(TextDecoder, self).__init__()
         self.fc1   = nn.Linear(n_latents, 512)
-        self.fc2   = nn.Linear(512, 512)
+        #self.fc2   = nn.Linear(512, 512)
         self.fc3   = nn.Linear(512, 512)
         self.fc4   = nn.Linear(512, 10)
         self.swish = Swish()
 
     def forward(self, z):
         h = self.swish(self.fc1(z))
-        h = self.swish(self.fc2(h))
+        #h = self.swish(self.fc2(h))
         h = self.swish(self.fc3(h))
         return self.fc4(h)  # NOTE: no softmax here. See train.py
 

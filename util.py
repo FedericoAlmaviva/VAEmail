@@ -39,6 +39,17 @@ def saveargs(id,args):
     n = text_file.write(st)
     text_file.close()
 
+
+def logDetailedEpch(id,st):
+    import os
+    if not os.path.exists("./"+id+"/log_epochs_detailed.txt"):
+        mode="w"
+    else:
+        mode = "a"
+    text_file = open("./"+id+"/log_epochs_detailed.txt", mode)
+    text_file.write(st+"\n")
+    text_file.close()
+
 def logEpoch(id,st):
     import os
     if not os.path.exists("./"+id+"/log_epochs.txt"):

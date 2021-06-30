@@ -157,6 +157,7 @@ if __name__ == "__main__":
         train_loss_meter = AverageMeter()
 
         # NOTE: is_paired is 1 if the example is paired
+        d_st = ""
         epch_time = time.time()
         for batch_idx, (image, text) in enumerate(train_loader):
             if epoch < args.annealing_epochs:
@@ -199,14 +200,17 @@ if __name__ == "__main__":
             # compute gradients and take step
             train_loss.backward()
             optimizer.step()
-
             if batch_idx % args.log_interval == 0:
                 print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}\tAnnealing-Factor: {:.3f}'.format(
                     epoch, batch_idx * len(image), len(train_loader.dataset),
                            100. * batch_idx / len(train_loader), train_loss_meter.avg, annealing_factor))
+                d_st += "{:.3f} {:.6f} {:.3f}\n".format(epoch+(batch_idx / len(train_loader)), train_loss_meter.avg, annealing_factor)
+
         st='====> Epoch: {}\tLoss: {:.4f}\tAnnealing-Factor: {:.3f}\tTime: {:.2f}s'.format(epoch, train_loss_meter.avg,annealing_factor,time.time()-epch_time)
         print(st)
+        util.logDetailedEpch(execution_id,d_st)
         util.logEpoch(execution_id,st)
+        d_st = ""
 
 
     def test(epoch):
