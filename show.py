@@ -26,7 +26,12 @@ def showLoss(inputs):
         cl = [random.random() for x in range(3)]
         plt.plot(x,y,color=cl)
         plt.plot(x,af,linestyle='dashed', color=cl)
-    plt.legend([e.name.split("/")[0] for e in inputs])
+    lgnd_lst = list()
+    for e in inputs:
+        lgnd_lst+=[e.name.split("/")[0]]
+        lgnd_lst+= ["annealing factor"]
+
+    plt.legend(lgnd_lst)
     plt.ylabel = "Loss"
     plt.xlabel = "Epoch"
     plt.show()
