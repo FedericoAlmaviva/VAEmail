@@ -1,6 +1,7 @@
 import datetime
 import timeit
 
+
 def get_argparser():
     import argparse
     parser = argparse.ArgumentParser()
@@ -27,65 +28,67 @@ def get_argparser():
 
 def get_executionName():
     from time import localtime, strftime
-    st=strftime("%d %b %Y %H:%M:%S", localtime())
+    st = strftime("%d%b%Y%H%M%S", localtime())
     return st
 
 
-def saveargs(id,args):
-    st=id+"\n"
+def saveargs(id, args):
+    st = id + "\n"
     for key in vars(args):
-        st+=key+" : "+str(args.__dict__.get(key))+"\n"
-    text_file = open("./"+id+"/params.txt", "wt")
+        st += key + " : " + str(args.__dict__.get(key)) + "\n"
+    text_file = open("./" + id + "/params.txt", "wt")
     n = text_file.write(st)
     text_file.close()
 
 
-def logDetailedEpch(id,st):
+def logDetailedEpch(id, st):
     import os
-    if not os.path.exists("./"+id+"/log_epochs_detailed.txt"):
-        mode="w"
+    if not os.path.exists("./" + id + "/log_epochs_detailed.txt"):
+        mode = "w"
     else:
         mode = "a"
-    text_file = open("./"+id+"/log_epochs_detailed.txt", mode)
-    text_file.write(st+"\n")
+    text_file = open("./" + id + "/log_epochs_detailed.txt", mode)
+    text_file.write(st + "\n")
     text_file.close()
 
-def logEpoch(id,st):
+
+def logEpoch(id, st):
     import os
-    if not os.path.exists("./"+id+"/log_epochs.txt"):
-        mode="w"
+    if not os.path.exists("./" + id + "/log_epochs.txt"):
+        mode = "w"
     else:
         mode = "a"
-    text_file = open("./"+id+"/log_epochs.txt", mode)
-    text_file.write(st+"\n")
+    text_file = open("./" + id + "/log_epochs.txt", mode)
+    text_file.write(st + "\n")
     text_file.close()
 
-def append_to_params_log(id,st):
-    text_file = open("./"+id+"/params.txt", "a")
+
+def append_to_params_log(id, st):
+    text_file = open("./" + id + "/params.txt", "a")
     n = text_file.write(st)
     text_file.close()
 
 
 def logNetStruct(id, model):
-    st="model structure (vars dump):\n"
+    st = "model structure (vars dump):\n"
     for key in vars(model):
         st += key + " : " + str(model.__dict__.get(key)) + "\n"
     text_file = open("./" + id + "/structure.txt", "wt")
     n = text_file.write(st)
     text_file.close()
 
+
 def logCode(id, model):
     import inspect
-    st=""
+    st = ""
     for elem in model._modules.values():
-        st+=type(elem).__name__+"\n"
-        tmp = inspect.getsource(getattr(elem,"forward"))
-        st+=tmp.replace("\n","\n    ")
-        st+="\r\n"
+        st += type(elem).__name__ + "\n"
+        tmp = inspect.getsource(getattr(elem, "forward"))
+        st += tmp.replace("\n", "\n    ")
+        st += "\r\n"
     text_file = open("./" + id + "/forwards code dump.txt", "wt")
     n = text_file.write(st)
     text_file.close()
-
 
 
 class Timer:
