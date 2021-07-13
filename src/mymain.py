@@ -12,8 +12,10 @@ from torch import optim
 
 import models
 import objectives
+from models import minimalmodel
 from utils import Logger, Timer, save_model, save_vars, unpack_data
 import mymodel
+import models.minimalmodel
 
 
 def getArgParser():
@@ -71,7 +73,7 @@ device = torch.device("cuda" if args.cuda else "cpu")
 
 # load model
 #modelC = getattr(models, 'VAE_{}'.format(args.model))
-model = mymodel.MNIST_SVHN(args).to(device)
+model = minimalmodel.MinimalModel(args).to(device)
 
 args.cuda = not args.no_cuda and torch.cuda.is_available()
 device = torch.device("cuda" if args.cuda else "cpu")
@@ -160,7 +162,7 @@ if __name__ == '__main__':
             train(epoch, agg)
             test(epoch, agg)
             save_model(model, runPath + '/model.rar')
-            #save_vars(agg, runPath + '/losses.rar')
+            save_vars(agg, runPath + '/losses.rar')
             #model.generate(runPath, epoch)
         if args.logp:  # compute as tight a marginal likelihood as possible
             estimate_log_marginal(5000)
