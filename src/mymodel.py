@@ -8,6 +8,7 @@ from numpy import sqrt, prod
 from torch.utils.data import DataLoader
 from torchnet.dataset import TensorDataset, ResampleDataset
 from torchvision.utils import save_image, make_grid
+from utils import get_mean, kl_divergence
 
 from vis import plot_embeddings, plot_kls_df
 from models.vae_mnist import MNIST
@@ -74,8 +75,17 @@ class MNIST_SVHN(nn.Module):
                        '{}/gen_samples_{}_{:03d}.png'.format(runPath, i, epoch),
                        nrow=int(sqrt(N)))
 
+    def super_reconstruct(self, data):
+        self.eval()
+        with torch.no_grad():
+            _, px_zs, _ = self.forward(data)
+            # cross-modal matrix of reconstructions
+            recons = [[get_mean(px_z) for px_z in r] for r in px_zs]
+        return recons
+
+
     def reconstruct(self, data, runPath, epoch):
-        recons_mat = super(MNIST_SVHN, self).reconstruct([d[:8] for d in data])
+        recons_mat = self.super_reconstruct(([d[:8] for d in data]))
         for r, recons_list in enumerate(recons_mat):
             for o, recon in enumerate(recons_list):
                 _data = data[r][:8].cpu()

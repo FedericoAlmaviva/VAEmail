@@ -92,7 +92,7 @@ with open('{}/args.json'.format(runPath), 'w') as fp:
 # -- also save object because we want to recover these for other things
 torch.save(args, '{}/args.rar'.format(runPath))
 #endregion
-# preparation for training
+#region preparation for training
 optimizer = optim.Adam(filter(lambda p: p.requires_grad, model.parameters()),
                        lr=1e-3, amsgrad=True)
 train_loader, test_loader = model.getDataLoaders(args.batch_size, device=device)
@@ -101,6 +101,7 @@ objective = getattr(objectives,
                     + args.obj
                     + ('_looser' if (args.looser and args.obj != 'elbo') else ''))
 t_objective = getattr(objectives, ('m_' if hasattr(model, 'vaes') else '') + 'iwae')
+#endregion
 
 def train(epoch, agg):
     model.train()
@@ -126,10 +127,12 @@ def test(epoch, agg):
             data = unpack_data(dataT, device=device)
             loss = -t_objective(model, data, K=args.K)
             b_loss += loss.item()
+            '''
             if i == 0:
                 model.reconstruct(data, runPath, epoch)
                 if not args.no_analytics:
                     model.analyse(data, runPath, epoch)
+            '''
     agg['test_loss'].append(b_loss / len(test_loader.dataset))
     print('====>             Test loss: {:.4f}'.format(agg['test_loss'][-1]))
 
@@ -155,7 +158,7 @@ if __name__ == '__main__':
         agg = defaultdict(list)
         for epoch in range(1, args.epochs + 1):
             train(epoch, agg)
-            #test(epoch, agg)
+            test(epoch, agg)
             save_model(model, runPath + '/model.rar')
             #save_vars(agg, runPath + '/losses.rar')
             #model.generate(runPath, epoch)
