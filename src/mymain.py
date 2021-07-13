@@ -155,9 +155,9 @@ if __name__ == '__main__':
         agg = defaultdict(list)
         for epoch in range(1, args.epochs + 1):
             train(epoch, agg)
-            test(epoch, agg)
+            #test(epoch, agg)
             save_model(model, runPath + '/model.rar')
-            save_vars(agg, runPath + '/losses.rar')
-            model.generate(runPath, epoch)
+            #save_vars(agg, runPath + '/losses.rar')
+            #model.generate(runPath, epoch)
         if args.logp:  # compute as tight a marginal likelihood as possible
             estimate_log_marginal(5000)
