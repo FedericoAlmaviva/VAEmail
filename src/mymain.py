@@ -161,7 +161,7 @@ if __name__ == '__main__':
         for epoch in range(1, args.epochs + 1):
             train(epoch, agg)
             test(epoch, agg)
-            save_model(model, runPath + '/model.rar')
+            torch.save(model, runPath + '/model_epoch_{}.pt'.format((epoch)))
             save_vars(agg, runPath + '/losses.rar')
             #model.generate(runPath, epoch)
         if args.logp:  # compute as tight a marginal likelihood as possible
