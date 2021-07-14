@@ -13,6 +13,7 @@ from utils import get_mean, kl_divergence
 from vis import plot_embeddings, plot_kls_df
 from models.vae_mnist import MNIST
 from models.vae_svhn import SVHN
+from mymodel import MNIST_SVHN
 
 class MinimalModel(nn.Module):
     def __init__(self,params):
@@ -79,3 +80,14 @@ class MinimalModel(nn.Module):
                 if e != d:  # fill-in off-diagonal
                     px_zs[e][d] = vae.px_z(*vae.dec(zs))
         return qz_xs, px_zs, zss
+
+    def generate(self, runPath):
+        N = 64
+        samples_list = super(MNIST_SVHN, self).generate(N)
+        for i, samples in enumerate(samples_list):
+            samples = samples.data.cpu()
+            # wrangle things so they come out tiled
+            samples = samples.view(N, *samples.size()[1:])
+            save_image(samples,
+                       '{}/gen_samples_{}.png'.format(runPath, i),
+                       nrow=int(sqrt(N)))
