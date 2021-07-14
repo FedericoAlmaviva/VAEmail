@@ -17,10 +17,23 @@ from models.vae_svhn import SVHN
 class MinimalModel(nn.Module):
     def __init__(self,params):
         super(MinimalModel, self).__init__()
+        self.pz  = dist.Laplace     #distribuzione da cui si fa il sampling?
         self.vaes = nn.ModuleList([MNIST(params), SVHN(params)])
         self.params = params
+
+        grad = {'requires_grad': params.learn_prior}
+        self._pz_params = nn.ParameterList([
+            nn.Parameter(torch.zeros(1, params.latent_dim), requires_grad=False),  # mu
+            nn.Parameter(torch.zeros(1, params.latent_dim), **grad)  # logvar
+        ])
+
         self.vaes[0].llik_scaling = prod(self.vaes[1].dataSize) / prod(self.vaes[0].dataSize) \
             if params.llik_scaling == 0 else params.llik_scaling
+
+    @property
+    def pz_params(self):
+        return self._pz_params[0], F.softmax(self._pz_params[1], dim=1) * self._pz_params[1].size(-1)
+
 
     def getDataLoaders(self, batch_size, shuffle=True, device='cuda'):
         if not (os.path.exists('../data/train-ms-mnist-idx.pt')
